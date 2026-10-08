@@ -1,0 +1,110 @@
+// Comprehensive technical domains across all engineering and management departments
+export const ALL_DOMAINS = [
+  // CSE / IT / AI
+  { name: 'Full Stack Development', dept: 'CSE / IT / AI' },
+  { name: 'AI & Machine Learning', dept: 'CSE / IT / AI' },
+  { name: 'Cloud & DevOps', dept: 'CSE / IT / AI' },
+  { name: 'Data Science & Analytics', dept: 'CSE / IT / AI' },
+  { name: 'Mobile App Development', dept: 'CSE / IT / AI' },
+  { name: 'Cybersecurity & Ethical Hacking', dept: 'CSE / IT / AI' },
+  { name: 'Blockchain Development', dept: 'CSE / IT / AI' },
+  { name: 'Game Development', dept: 'CSE / IT / AI' },
+  { name: 'UI/UX Design', dept: 'CSE / IT / AI' },
+  { name: 'Software Quality Assurance & Testing', dept: 'CSE / IT / AI' },
+  { name: 'Big Data Engineering', dept: 'CSE / IT / AI' },
+  { name: 'Natural Language Processing (NLP)', dept: 'CSE / IT / AI' },
+  { name: 'Computer Vision', dept: 'CSE / IT / AI' },
+
+  // EEE
+  { name: 'Power Systems Engineering', dept: 'EEE' },
+  { name: 'Embedded Systems & IoT', dept: 'EEE' },
+  { name: 'Control Systems & Automation', dept: 'EEE' },
+  { name: 'Renewable Energy & Solar Systems', dept: 'EEE' },
+  { name: 'Electric Vehicle (EV) Technology', dept: 'EEE' },
+  { name: 'Industrial Automation & PLC / SCADA', dept: 'EEE' },
+  { name: 'Battery Management Systems (BMS)', dept: 'EEE' },
+  { name: 'Power Electronics & Drives', dept: 'EEE' },
+  { name: 'Smart Grid & Energy Metering', dept: 'EEE' },
+
+  // ECE
+  { name: 'VLSI Design & Verification', dept: 'ECE' },
+  { name: 'RF & Communication Systems', dept: 'ECE' },
+  { name: 'Signal & Image Processing', dept: 'ECE' },
+  { name: 'PCB Design & Hardware Prototyping', dept: 'ECE' },
+  { name: 'Wireless & 5G Networks', dept: 'ECE' },
+  { name: 'FPGA & ASIC Development', dept: 'ECE' },
+  { name: 'Optical & Satellite Communication', dept: 'ECE' },
+  { name: 'Microcontroller Firmware Development', dept: 'ECE' },
+  { name: 'Telecom Network Engineering', dept: 'ECE' },
+
+  // Civil
+  { name: 'Structural Engineering & Analysis', dept: 'Civil' },
+  { name: 'Transportation & Highway Engineering', dept: 'Civil' },
+  { name: 'Environmental & Water Resources', dept: 'Civil' },
+  { name: 'Construction Project Management', dept: 'Civil' },
+  { name: 'Geotechnical & Foundation Engineering', dept: 'Civil' },
+  { name: 'GIS & Remote Sensing Mapping', dept: 'Civil' },
+  { name: 'Building Information Modeling (BIM)', dept: 'Civil' },
+  { name: 'Surveying & Smart Infrastructure', dept: 'Civil' },
+  { name: 'Urban Planning & Architecture', dept: 'Civil' },
+
+  // Mechanical
+  { name: 'Product Design & 3D CAD/CAM', dept: 'Mechanical' },
+  { name: 'Manufacturing & Production Technology', dept: 'Mechanical' },
+  { name: 'Thermal & Fluid Engineering', dept: 'Mechanical' },
+  { name: 'Robotics & Automation', dept: 'Mechanical' },
+  { name: 'Automotive Engineering & Powertrain', dept: 'Mechanical' },
+  { name: 'HVAC & Refrigeration Systems', dept: 'Mechanical' },
+  { name: 'Additive Manufacturing & 3D Printing', dept: 'Mechanical' },
+  { name: 'Aerodynamics & CFD Simulation', dept: 'Mechanical' },
+  { name: 'Mechatronics & Drone Technology', dept: 'Mechanical' },
+
+  // Agriculture
+  { name: 'Precision Agriculture & Smart Farming', dept: 'Agriculture' },
+  { name: 'Agri-Business & Supply Chain', dept: 'Agriculture' },
+  { name: 'Food Processing Technology & Quality', dept: 'Agriculture' },
+  { name: 'Agricultural Biotechnology', dept: 'Agriculture' },
+  { name: 'Drip Irrigation & Soil Water Tech', dept: 'Agriculture' },
+  { name: 'Farm Machinery & Power Engineering', dept: 'Agriculture' },
+  { name: 'Post-Harvest Technology', dept: 'Agriculture' },
+  { name: 'Agronomy & Soil Science', dept: 'Agriculture' },
+
+  // Other / Cross-functional
+  { name: 'Research & Development', dept: 'Other' },
+  { name: 'Business Analytics & Intelligence', dept: 'Other' },
+  { name: 'Digital Marketing & Growth', dept: 'Other' },
+  { name: 'Finance & FinTech', dept: 'Other' },
+  { name: 'Human Resources & Talent Tech', dept: 'Other' },
+  { name: 'Operations & Supply Chain', dept: 'Other' },
+];
+
+// Comprehensive locations list for internship search and filters
+export const ALL_LOCATIONS = [
+  'Remote',
+  'Chennai',
+  'Bangalore',
+  'Hyderabad',
+  'Coimbatore',
+  'Pune',
+  'Mumbai',
+  'Delhi NCR',
+  'Noida',
+  'Gurgaon',
+  'Mysore',
+  'Kochi',
+  'Trivandrum',
+  'Ahmedabad',
+  'Kolkata',
+  'Vellore',
+  'Madurai',
+  'Trichy',
+  'Salem',
+  'Tirunelveli',
+  'Jaipur',
+  'Indore',
+  'Chandigarh',
+  'Visakhapatnam',
+  'Bhubaneswar',
+  'Work From Home',
+  'Hybrid'
+];
