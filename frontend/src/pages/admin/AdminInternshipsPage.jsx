@@ -3,12 +3,15 @@ import api from '../../services/api';
 import { Loader } from '../../components/common/Loader';
 import { EmptyState } from '../../components/common/EmptyState';
 import { StatusBadge, WorkModeBadge } from '../../components/common/Badge';
-import { Briefcase, Search, Building2, MapPin, IndianRupee, Lock, Eye, AlertCircle } from 'lucide-react';
+import { Briefcase, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ROWS_PER_PAGE = 5;
 
 export const AdminInternshipsPage = () => {
   const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchInternships = async () => {
     try {
@@ -48,6 +51,14 @@ export const AdminInternshipsPage = () => {
 
   if (loading) return <Loader message="Fetching institutional internship oversight..." />;
 
+  const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+  const paginated = filtered.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
+
+  const handleSearch = (val) => {
+    setSearchQuery(val);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="space-y-6">
       
@@ -55,7 +66,7 @@ export const AdminInternshipsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-            Internship Requisitions Oversight ({internships.length})
+            Internships
           </h2>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
             Monitor all posted requisitions across partner companies, track vacancy fulfillment, and enforce compliance.
@@ -68,7 +79,7 @@ export const AdminInternshipsPage = () => {
             type="text"
             placeholder="Search requisition or company..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-10 pr-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
@@ -93,7 +104,7 @@ export const AdminInternshipsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filtered.map((j) => (
+                {paginated.map((j) => (
                   <tr key={j._id} className="hover:bg-slate-50/80">
                     <td className="py-4 px-6 font-extrabold text-slate-900">
                       <div>{j.role}</div>
@@ -139,6 +150,36 @@ export const AdminInternshipsPage = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-100 bg-slate-50/60">
+            <span className="text-[11px] text-slate-500 font-medium">
+              {filtered.length === 0
+                ? 'No results'
+                : `Showing ${(currentPage - 1) * ROWS_PER_PAGE + 1}–${Math.min(currentPage * ROWS_PER_PAGE, filtered.length)} of ${filtered.length} internships`}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                Previous
+              </button>
+              <span className="text-xs font-bold text-slate-600 px-1">
+                {currentPage} / {Math.max(1, totalPages)}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages || totalPages <= 1}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                Next
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -22,6 +22,7 @@ import {
   Star,
   Clock,
   X,
+  Hash,
 } from 'lucide-react';
 import { WorkModeBadge } from '../../components/common/Badge';
 
@@ -274,6 +275,8 @@ export const FindInternships = () => {
   const [workMode, setWorkMode] = useState(searchParams.get('workMode') || 'All');
   const [stipendRange, setStipendRange] = useState('All');
   const [sort, setSort] = useState('BEST_MATCH');
+  // Top-N display limit (e.g. 10 displays top 10)
+  const [topN, setTopN] = useState('');
 
   const fetchInternships = async () => {
     try {
@@ -284,6 +287,7 @@ export const FindInternships = () => {
         domain: domain && domain !== 'All' && domain.trim() ? domain.trim() : undefined,
         workMode: workMode !== 'All' ? workMode : undefined,
         sort,
+        limit: 100,
       };
 
       if (stipendRange === 'BELOW_10K') {
@@ -339,6 +343,7 @@ export const FindInternships = () => {
     setWorkMode('All');
     setStipendRange('All');
     setSort('BEST_MATCH');
+    setTopN('');
     setSearchParams({});
   };
 
@@ -407,7 +412,7 @@ export const FindInternships = () => {
         </form>
 
         {/* Filter Dropdowns Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-3 border-t border-slate-100 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 pt-3 border-t border-slate-100 text-xs">
           
           {/* Location */}
           <LocationFilterInput value={location} onChange={setLocation} />
@@ -465,12 +470,49 @@ export const FindInternships = () => {
             </select>
           </div>
 
+          {/* Top-N Limiter */}
+          <div>
+            <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1 flex items-center gap-1">
+              <Hash className="w-3 h-3 text-indigo-500" />
+              Show Top N
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                min="1"
+                max="100"
+                placeholder="e.g. 10"
+                value={topN}
+                onChange={(e) => setTopN(e.target.value)}
+                className="w-full pl-2.5 pr-7 py-2 rounded-xl border border-slate-200 font-semibold text-slate-800 text-xs bg-white hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
+              />
+              {topN && (
+                <button
+                  type="button"
+                  onClick={() => setTopN('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
         </div>
 
         {/* Active Filters count and Clear Button */}
         <div className="flex items-center justify-between text-xs pt-1">
           <span className="text-slate-500 font-medium">
-            Showing <b className="text-slate-800">{internships.length}</b> verified opportunities
+            Showing{' '}
+            <b className="text-slate-800">
+              {topN && parseInt(topN) > 0
+                ? Math.min(parseInt(topN), internships.length)
+                : internships.length}
+            </b>
+            {topN && parseInt(topN) > 0 && parseInt(topN) < internships.length
+              ? ` of ${internships.length}`
+              : ''}{' '}
+            verified opportunities
           </span>
           <button
             type="button"
@@ -495,7 +537,10 @@ export const FindInternships = () => {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-          {internships.map((job) => (
+          {(topN && parseInt(topN, 10) > 0
+            ? internships.slice(0, parseInt(topN, 10))
+            : internships
+          ).map((job) => (
             <InternshipCard
               key={job._id}
               internship={job}

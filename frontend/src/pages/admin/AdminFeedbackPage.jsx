@@ -123,7 +123,6 @@ export const AdminFeedbackPage = () => {
 
   const filteredPortalFeedback = portalFeedback.filter((item) => {
     if (categoryFilter !== 'ALL' && item.category !== categoryFilter) return false;
-    if (statusFilter !== 'ALL' && item.status !== statusFilter) return false;
     return true;
   });
 
@@ -220,51 +219,33 @@ export const AdminFeedbackPage = () => {
       {activeTab === 'portal' && (
         <div className="space-y-4">
           
-          {/* Filters */}
-          <div className="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-bold text-slate-400 uppercase tracking-wider text-[11px] mr-1">
-                Category:
-              </span>
-              {[
-                { id: 'ALL', label: 'All' },
-                { id: 'PORTAL_IMPROVEMENT', label: 'Portal Improvement' },
-                { id: 'SUGGESTION', label: 'Feature Suggestion' },
-                { id: 'FEATURE_REQUEST', label: 'Feature Request' },
-                { id: 'BUG_REPORT', label: 'Bug Report' },
-              ].map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setCategoryFilter(c.id)}
-                  className={`px-3 py-1 rounded-xl font-bold transition-all ${
-                    categoryFilter === c.id
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-bold text-slate-400 uppercase tracking-wider text-[11px] mr-1">
-                Status:
-              </span>
-              {['ALL', 'PENDING', 'UNDER_REVIEW', 'PLANNED', 'IMPLEMENTED'].map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setStatusFilter(st)}
-                  className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all ${
-                    statusFilter === st
-                      ? 'bg-slate-900 text-white'
-                      : 'text-slate-500 hover:bg-slate-100'
-                  }`}
-                >
-                  {st.replace('_', ' ')}
-                </button>
-              ))}
-            </div>
+          {/* Category Filter Only */}
+          <div className="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-sm flex flex-wrap items-center gap-2 text-xs">
+            <span className="font-bold text-slate-400 uppercase tracking-wider text-[11px]">
+              Category:
+            </span>
+            {[
+              { id: 'ALL', label: 'All' },
+              { id: 'PORTAL_IMPROVEMENT', label: 'Portal Improvement' },
+              { id: 'SUGGESTION', label: 'Feature Suggestion' },
+              { id: 'FEATURE_REQUEST', label: 'Feature Request' },
+              { id: 'BUG_REPORT', label: 'Bug Report' },
+            ].map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setCategoryFilter(c.id)}
+                className={`px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+                  categoryFilter === c.id
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                    : 'text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+            <span className="ml-auto text-[11px] text-slate-400 font-medium">
+              {filteredPortalFeedback.length} suggestion{filteredPortalFeedback.length !== 1 ? 's' : ''}
+            </span>
           </div>
 
           {/* Feedback list */}
@@ -279,14 +260,18 @@ export const AdminFeedbackPage = () => {
               {filteredPortalFeedback.map((item) => (
                 <div
                   key={item._id}
-                  className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card flex flex-col justify-between space-y-4 hover:border-indigo-200 transition-colors"
+                  className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-card flex flex-col justify-between space-y-4 hover:border-indigo-200 hover:shadow-lg transition-all duration-200"
                 >
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         {getCategoryBadge(item.category)}
-                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
-                          item.priority === 'HIGH' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-600'
+                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${
+                          item.priority === 'HIGH'
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                            : item.priority === 'MEDIUM'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-slate-100 text-slate-600 border border-slate-200'
                         }`}>
                           {item.priority} Priority
                         </span>
@@ -294,10 +279,10 @@ export const AdminFeedbackPage = () => {
                       {getStatusBadge(item.status)}
                     </div>
 
-                    <h4 className="text-base font-black text-slate-900 mt-1">
+                    <h4 className="text-base font-black text-slate-900 mt-1 leading-snug">
                       {item.title}
                     </h4>
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed whitespace-pre-line">
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed whitespace-pre-line line-clamp-3">
                       {item.description}
                     </p>
 
@@ -310,10 +295,15 @@ export const AdminFeedbackPage = () => {
                   </div>
 
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                    <div>
-                      <span>Submitted by: <b>{item.name || item.user?.name || 'Portal User'}</b></span>
-                      <span className="ml-1 uppercase text-[10px] px-1.5 py-0.5 rounded bg-slate-100 font-bold text-slate-600">
-                        {item.role || item.user?.role || 'user'}
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-600">
+                        {(item.name || item.user?.name || 'U').charAt(0).toUpperCase()}
+                      </div>
+                      <span>
+                        <b className="text-slate-700">{item.name || item.user?.name || 'Portal User'}</b>
+                        <span className="ml-1 uppercase text-[10px] px-1.5 py-0.5 rounded bg-slate-100 font-bold text-slate-600">
+                          {item.role || item.user?.role || 'user'}
+                        </span>
                       </span>
                     </div>
 
@@ -323,7 +313,7 @@ export const AdminFeedbackPage = () => {
                         setNewStatus(item.status);
                         setAdminResponse(item.adminResponse || '');
                       }}
-                      className="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors"
+                      className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs transition-colors border border-indigo-200"
                     >
                       Update Status
                     </button>

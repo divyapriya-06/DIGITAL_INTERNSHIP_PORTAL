@@ -69,13 +69,43 @@ export const ALL_DOMAINS = [
   { name: 'Post-Harvest Technology', dept: 'Agriculture' },
   { name: 'Agronomy & Soil Science', dept: 'Agriculture' },
 
-  // Other / Cross-functional
-  { name: 'Research & Development', dept: 'Other' },
-  { name: 'Business Analytics & Intelligence', dept: 'Other' },
-  { name: 'Digital Marketing & Growth', dept: 'Other' },
+  // Other / Cross-functional & Non-Technical
+  { name: 'Human Resources & Talent Acquisition', dept: 'Other' },
+  { name: 'Sales & Business Development', dept: 'Other' },
+  { name: 'Teaching, Pedagogy & Education Tech', dept: 'Other' },
+  { name: 'Corporate Training & Mentorship', dept: 'Other' },
+  { name: 'Operations & Process Management', dept: 'Other' },
   { name: 'Finance & FinTech', dept: 'Other' },
-  { name: 'Human Resources & Talent Tech', dept: 'Other' },
-  { name: 'Operations & Supply Chain', dept: 'Other' },
+  { name: 'Business Analytics & Intelligence', dept: 'Other' },
+  { name: 'Digital Marketing & Content Strategy', dept: 'Other' },
+  { name: 'Research & Academic Development', dept: 'Other' },
+];
+
+export const ALL_ROLES = [
+  // Engineering & Tech Roles
+  'Full Stack Developer',
+  'Frontend Developer',
+  'Backend Developer',
+  'AI / Machine Learning Engineer',
+  'Data Scientist',
+  'Data Analyst / BI Engineer',
+  'Cloud / DevOps Engineer',
+  'Embedded Systems / IoT Engineer',
+  'EV Battery & Powertrain Engineer',
+  'VLSI Design & Verification Engineer',
+  'Robotics & Automation Engineer',
+  'Cybersecurity Analyst',
+  'UI/UX Designer',
+  'Mobile App Developer',
+  'Smart Farming / AgriTech Engineer',
+  // Management, HR, Teaching & Other Roles
+  'HR Executive / Talent Recruiter',
+  'Sales Manager / Business Development Lead',
+  'Teacher / Educational Content Specialist',
+  'Corporate Trainer / Mentor',
+  'Operations & Process Coordinator',
+  'Financial Analyst / Quant',
+  'Marketing & Growth Executive',
 ];
 
 // Comprehensive locations list for internship search and filters

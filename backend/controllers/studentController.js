@@ -329,7 +329,7 @@ export const searchInternships = async (req, res) => {
       rating,
       sort,
       page = 1,
-      limit = 12,
+      limit = 100,
     } = req.query;
 
     const approvedIndustries = await IndustryProfile.find({ verificationStatus: 'APPROVED' }).select('_id');
@@ -415,16 +415,26 @@ export const searchInternships = async (req, res) => {
     const formattedList = internships.map(job => {
       let matchScore = null;
       let explainReasons = [];
+      let matchBreakdown = null;
+      let matchedSkills = [];
+      let missingSkills = [];
+
       if (studentProfile) {
         const matchData = calculateStudentInternshipMatch(studentProfile, job, null);
         matchScore = matchData.matchPercentage;
         explainReasons = matchData.explainableReasons;
+        matchBreakdown = matchData.scores;
+        matchedSkills = matchData.matchedSkills;
+        missingSkills = matchData.missingSkills;
       }
 
       return {
         ...job.toObject(),
         matchPercentage: matchScore,
         explainableReasons: explainReasons,
+        matchBreakdown,
+        matchedSkills,
+        missingSkills,
         appliedStatus: appliedMap[job._id.toString()] || null,
         hasApplied: !!appliedMap[job._id.toString()],
       };

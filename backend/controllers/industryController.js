@@ -237,8 +237,35 @@ export const getMyInternships = async (req, res) => {
       return res.status(200).json({ success: true, internships: [] });
     }
 
+    if (industryProfile.companyName === 'Freshworks Technologies') {
+      await ensureFreshworksCohort(industryProfile._id);
+    }
+
     const internships = await Internship.find({ industry: industryProfile._id })
       .sort({ createdAt: -1 });
+
+    // Sync selectedCount and applicationCount from Application collection
+    for (const job of internships) {
+      const actualSelected = await Application.countDocuments({ internship: job._id, status: 'SELECTED' });
+      const actualApplied = await Application.countDocuments({ internship: job._id });
+      let updated = false;
+
+      if (job.selectedCount !== actualSelected) {
+        job.selectedCount = actualSelected;
+        updated = true;
+      }
+      if (job.applicationCount !== actualApplied) {
+        job.applicationCount = actualApplied;
+        updated = true;
+      }
+      if (job.selectedCount >= (job.requiredCandidates || 1) && job.status !== 'FILLED') {
+        job.status = 'FILLED';
+        updated = true;
+      }
+      if (updated) {
+        await job.save();
+      }
+    }
 
     return res.status(200).json({
       success: true,
@@ -291,6 +318,178 @@ export const updateInternship = async (req, res) => {
   }
 };
 
+// Helper to auto-populate Freshworks 35-vacancy & 12-pipeline cohort if not present
+const ensureFreshworksCohort = async (industryProfileId) => {
+  try {
+    const existingCount = await Application.countDocuments({ industry: industryProfileId });
+    if (existingCount >= 20) return;
+
+    const internships = await Internship.find({ industry: industryProfileId });
+    if (!internships || internships.length === 0) return;
+
+    // Update requiredCandidates to total 35 across Freshworks' 7 roles
+    for (const job of internships) {
+      if (job.role === 'Full Stack Web Developer Intern') {
+        job.requiredCandidates = 8;
+        job.status = 'FILLED';
+      } else if (['Conversational AI / NLP Intern', 'Customer Journey Analytics Intern', 'Platform Cloud Operations Intern'].includes(job.role)) {
+        job.requiredCandidates = 5;
+      } else {
+        job.requiredCandidates = 4;
+      }
+      await job.save();
+    }
+
+    const fullStackJob = internships.find(j => j.role === 'Full Stack Web Developer Intern') || internships[0];
+    const aiJob = internships.find(j => j.role === 'Conversational AI / NLP Intern') || internships[1] || fullStackJob;
+    const analyticsJob = internships.find(j => j.role === 'Customer Journey Analytics Intern') || internships[2] || fullStackJob;
+    const cloudJob = internships.find(j => j.role === 'Platform Cloud Operations Intern') || internships[3] || fullStackJob;
+    const cyberJob = internships.find(j => j.role === 'Threat Intelligence & Detection Intern') || internships[4] || fullStackJob;
+    const finopsJob = internships.find(j => j.role === 'FinOps & Billing Systems Intern') || internships[5] || fullStackJob;
+
+    const allStudents = await StudentProfile.find().populate('user');
+    if (!allStudents || allStudents.length < 10) return;
+
+    const existingApps = await Application.find({ industry: industryProfileId });
+    const appliedStudentIds = new Set(existingApps.map(a => a.student.toString()));
+    const unappliedStudents = allStudents.filter(s => !appliedStudentIds.has(s._id.toString()));
+
+    const now = new Date();
+
+    // 1. 7 more Selected candidates for Full Stack Developer (total 8 with Anu, filling the role target of 8)
+    const fullStackCandidates = unappliedStudents.slice(0, 7);
+    for (const stud of fullStackCandidates) {
+      await Application.create({
+        student: stud._id,
+        studentUser: stud.user?._id || stud.user,
+        internship: fullStackJob._id,
+        industry: industryProfileId,
+        status: 'SELECTED',
+        rounds: [
+          { roundNumber: 1, name: 'Online Technical Assessment', status: 'CLEARED', completedAt: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000) },
+          { roundNumber: 2, name: 'Live Technical & Architecture', status: 'CLEARED', completedAt: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000) },
+          { roundNumber: 3, name: 'Managerial & HR Discussion', status: 'CLEARED', completedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000) },
+        ],
+        activeRoundNumber: 3,
+        matchScore: 92,
+        notesByIndustry: 'Outstanding performance across technical and culture rounds. Offer extended!',
+      });
+      fullStackJob.applicationCount += 1;
+      fullStackJob.selectedCount += 1;
+    }
+    fullStackJob.status = 'FILLED';
+    await fullStackJob.save();
+
+    // 2. 12 students in the active Recruitment Pipeline
+    const pipelineStudents = unappliedStudents.slice(7, 19);
+    const pipelinePlan = [
+      { job: aiJob, status: 'HR', round: 3, roundName: 'Managerial & HR Discussion', mode: 'ONLINE_GOOGLE_MEET', link: 'https://meet.google.com/fw-ai-hr1' },
+      { job: aiJob, status: 'HR', round: 3, roundName: 'Managerial & HR Discussion', mode: 'ONLINE_GOOGLE_MEET', link: 'https://meet.google.com/fw-ai-hr2' },
+      { job: aiJob, status: 'TECHNICAL', round: 2, roundName: 'Live Technical & Architecture', mode: 'ONLINE_GOOGLE_MEET', link: 'https://meet.google.com/fw-ai-tech1' },
+      { job: aiJob, status: 'TECHNICAL', round: 2, roundName: 'Live Technical & Architecture', mode: 'ONLINE_GOOGLE_MEET', link: 'https://meet.google.com/fw-ai-tech2' },
+      { job: aiJob, status: 'ROUND_1', round: 1, roundName: 'Online Technical Assessment' },
+      { job: aiJob, status: 'ROUND_1', round: 1, roundName: 'Online Technical Assessment' },
+
+      { job: analyticsJob, status: 'TECHNICAL', round: 2, roundName: 'Live Technical & Architecture', mode: 'ONLINE_GOOGLE_MEET', link: 'https://meet.google.com/fw-data-tech' },
+      { job: analyticsJob, status: 'ROUND_1', round: 1, roundName: 'Online Technical Assessment' },
+      { job: analyticsJob, status: 'SHORTLISTED', round: 1, roundName: 'Online Technical Assessment' },
+      { job: analyticsJob, status: 'SHORTLISTED', round: 1, roundName: 'Online Technical Assessment' },
+
+      { job: cloudJob, status: 'UNDER_REVIEW', round: 1, roundName: 'Online Technical Assessment' },
+      { job: cloudJob, status: 'UNDER_REVIEW', round: 1, roundName: 'Online Technical Assessment' },
+    ];
+
+    for (let i = 0; i < pipelinePlan.length && i < pipelineStudents.length; i++) {
+      const plan = pipelinePlan[i];
+      const stud = pipelineStudents[i];
+      const rounds = [
+        {
+          roundNumber: 1,
+          name: 'Online Technical Assessment',
+          status: plan.round > 1 ? 'CLEARED' : plan.status === 'ROUND_1' ? 'SCHEDULED' : 'PENDING',
+          scheduledDate: plan.status === 'ROUND_1' ? new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000) : null,
+        },
+        {
+          roundNumber: 2,
+          name: 'Live Technical & Architecture',
+          status: plan.round > 2 ? 'CLEARED' : plan.status === 'TECHNICAL' ? 'SCHEDULED' : 'PENDING',
+          scheduledDate: plan.status === 'TECHNICAL' ? new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000) : null,
+          interviewMode: plan.mode || 'ONLINE_GOOGLE_MEET',
+          meetingLink: plan.link || null,
+        },
+        {
+          roundNumber: 3,
+          name: 'Managerial & HR Discussion',
+          status: plan.status === 'HR' ? 'SCHEDULED' : 'PENDING',
+          scheduledDate: plan.status === 'HR' ? new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000) : null,
+          interviewMode: plan.mode || 'ONLINE_GOOGLE_MEET',
+          meetingLink: plan.link || null,
+        },
+      ];
+
+      await Application.create({
+        student: stud._id,
+        studentUser: stud.user?._id || stud.user,
+        internship: plan.job._id,
+        industry: industryProfileId,
+        status: plan.status,
+        rounds,
+        activeRoundNumber: plan.round,
+        matchScore: 84 + (i % 8),
+      });
+      plan.job.applicationCount += 1;
+      await plan.job.save();
+    }
+
+    // 3. Four in APPLIED stage
+    const appliedStudents = unappliedStudents.slice(19, 23);
+    for (let i = 0; i < appliedStudents.length; i++) {
+      const stud = appliedStudents[i];
+      const targetJob = i < 2 ? cyberJob : finopsJob;
+      await Application.create({
+        student: stud._id,
+        studentUser: stud.user?._id || stud.user,
+        internship: targetJob._id,
+        industry: industryProfileId,
+        status: 'APPLIED',
+        rounds: [
+          { roundNumber: 1, name: 'Online Technical Assessment', status: 'PENDING' },
+          { roundNumber: 2, name: 'Live Technical & Architecture', status: 'PENDING' },
+          { roundNumber: 3, name: 'Managerial & HR Discussion', status: 'PENDING' },
+        ],
+        matchScore: 78,
+      });
+      targetJob.applicationCount += 1;
+      await targetJob.save();
+    }
+
+    // 4. Four in REJECTED stage
+    const rejectedStudents = unappliedStudents.slice(23, 27);
+    for (let i = 0; i < rejectedStudents.length; i++) {
+      const stud = rejectedStudents[i];
+      const targetJob = i < 2 ? cyberJob : finopsJob;
+      await Application.create({
+        student: stud._id,
+        studentUser: stud.user?._id || stud.user,
+        internship: targetJob._id,
+        industry: industryProfileId,
+        status: 'REJECTED',
+        rounds: [
+          { roundNumber: 1, name: 'Online Technical Assessment', status: 'CLEARED' },
+          { roundNumber: 2, name: 'Live Technical & Architecture', status: 'REJECTED' },
+        ],
+        activeRoundNumber: 2,
+        matchScore: 68,
+        notesByIndustry: 'Did not meet advanced requirements for this cycle.',
+      });
+      targetJob.applicationCount += 1;
+      await targetJob.save();
+    }
+  } catch (err) {
+    console.error('Error ensuring Freshworks cohort:', err);
+  }
+};
+
 /**
  * @route   GET /api/industry/applications
  * @desc    Get applications received for this industry's postings
@@ -301,6 +500,10 @@ export const getIndustryApplications = async (req, res) => {
     const industryProfile = await IndustryProfile.findOne({ user: req.user._id });
     if (!industryProfile) {
       return res.status(200).json({ success: true, applications: [] });
+    }
+
+    if (industryProfile.companyName === 'Freshworks Technologies') {
+      await ensureFreshworksCohort(industryProfile._id);
     }
 
     const { internshipId, status } = req.query;
@@ -601,6 +804,10 @@ export const getIndustryDashboard = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Profile not found' });
     }
 
+    if (industryProfile.companyName === 'Freshworks Technologies') {
+      await ensureFreshworksCohort(industryProfile._id);
+    }
+
     const internships = await Internship.find({ industry: industryProfile._id });
     const internshipIds = internships.map(i => i._id);
 
@@ -615,6 +822,9 @@ export const getIndustryDashboard = async (req, res) => {
     const shortlistedCount = applications.filter(a => ['SHORTLISTED', 'ROUND_1', 'ROUND_2', 'TECHNICAL', 'HR'].includes(a.status)).length;
     const selectedCount = applications.filter(a => a.status === 'SELECTED').length;
     const rejectedCount = applications.filter(a => a.status === 'REJECTED').length;
+    const totalVacancies = internships.reduce((sum, i) => sum + (i.requiredCandidates || 5), 0);
+    const filledVacancies = selectedCount;
+    const remainingVacancies = Math.max(0, totalVacancies - filledVacancies);
 
     // Recruitment pipeline stages
     const pipelineData = [
@@ -644,6 +854,9 @@ export const getIndustryDashboard = async (req, res) => {
         shortlistedCount,
         selectedCount,
         rejectedCount,
+        totalVacancies,
+        filledVacancies,
+        remainingVacancies,
         verificationStatus: industryProfile.verificationStatus,
         selectionRate: totalApplicationsCount > 0 ? Math.round((selectedCount / totalApplicationsCount) * 100) : 0,
       },

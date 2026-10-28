@@ -15,6 +15,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
+const ROWS_PER_PAGE = 5;
+
 export const AdminStudentsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialStatus = searchParams.get('status') || 'ALL';
@@ -25,6 +27,7 @@ export const AdminStudentsPage = () => {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [notification, setNotification] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Sync status filter if searchParams change
   useEffect(() => {
@@ -110,6 +113,7 @@ export const AdminStudentsPage = () => {
 
   const setFilterTab = (tab) => {
     setStatusFilter(tab);
+    setCurrentPage(1);
     if (tab === 'ALL') {
       searchParams.delete('status');
       setSearchParams(searchParams);
@@ -138,6 +142,9 @@ export const AdminStudentsPage = () => {
 
   if (loading) return <Loader message="Fetching institutional student database..." />;
 
+  const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
+  const paginated = filtered.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
+
   return (
     <div className="space-y-6">
       
@@ -145,7 +152,7 @@ export const AdminStudentsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-            Registered Student Body ({students.length})
+            Registered Students
           </h2>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
             Manage student registrations, review academic credentials, and toggle account activation or deletion.
@@ -158,7 +165,10 @@ export const AdminStudentsPage = () => {
             type="text"
             placeholder="Search by student, college or skill..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full pl-10 pr-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
@@ -215,7 +225,7 @@ export const AdminStudentsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filtered.map((s) => {
+                {paginated.map((s) => {
                   const userStatus = s.user?.status || 'ACTIVE';
                   const isInactive = userStatus === 'INACTIVE';
                   const isActing = actionLoadingId === s._id;
@@ -331,6 +341,36 @@ export const AdminStudentsPage = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {filtered.length > 0 && (
+            <div className="flex items-center justify-between px-6 py-3 border-t border-slate-100 bg-slate-50/60">
+              <span className="text-[11px] text-slate-500 font-medium">
+                Showing {(currentPage - 1) * ROWS_PER_PAGE + 1}–{Math.min(currentPage * ROWS_PER_PAGE, filtered.length)} of {filtered.length} students
+              </span>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    ← Previous
+                  </button>
+                  <span className="text-xs font-bold text-slate-600 px-2">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

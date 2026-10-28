@@ -19,6 +19,8 @@ import {
   BookOpen,
   DollarSign,
   ChevronRight,
+  Users,
+  GraduationCap,
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 
@@ -242,6 +244,44 @@ export const FIELD_TAXONOMY = {
     recommendedToLearn: [
       { skill: 'Revit BIM Level 2 Standards', reason: 'High demand across national infrastructure projects and metro rails.' },
       { skill: 'ETABS Dynamic Seismic Analysis', reason: 'Crucial requirement for multi-story residential and commercial design.' },
+    ],
+  },
+
+  other: {
+    id: 'other',
+    name: 'Management, HR, Education & Operations (Other)',
+    shortName: 'Other / Management',
+    icon: Users,
+    color: '#8b5cf6',
+    accentBg: 'bg-purple-50 border-purple-200 text-purple-700',
+    description: 'Human Resources, Sales & BD, Teaching & Pedagogy, Corporate Training, Educational Technology & Operations.',
+    growthRate: '+30% YoY',
+    avgStipend: '₹18,000 - ₹45,000/mo',
+    skills: [
+      { name: 'Talent Acquisition & HR Tech', count: 42, percentage: 86, color: '#8b5cf6' },
+      { name: 'Sales Pipeline & CRM Strategy', count: 38, percentage: 80, color: '#7c3aed' },
+      { name: 'Pedagogy & Curriculum Design', count: 33, percentage: 74, color: '#6d28d9' },
+      { name: 'Corporate Training & Mentorship', count: 29, percentage: 68, color: '#5b21b6' },
+      { name: 'Operations & Process Optimization', count: 25, percentage: 62, color: '#4c1d95' },
+      { name: 'Financial Modeling & Valuation', count: 22, percentage: 56, color: '#6366f1' },
+      { name: 'Digital Growth & Social Marketing', count: 19, percentage: 50, color: '#4f46e5' },
+      { name: 'Educational LMS Administration', count: 16, percentage: 44, color: '#4338ca' },
+    ],
+    topRoles: [
+      { role: 'HR Executive / Recruiter', openings: 44, demand: 'Very High' },
+      { role: 'Sales Manager / BD Lead', openings: 38, demand: 'Very High' },
+      { role: 'Teacher / Educational Content Specialist', openings: 32, demand: 'High' },
+      { role: 'Corporate Trainer & Coach', openings: 26, demand: 'High' },
+      { role: 'Operations & Process Coordinator', openings: 21, demand: 'High' },
+    ],
+    certifications: [
+      'SHRM Certified Professional (SHRM-CP)',
+      'Certified Corporate Trainer (ATD)',
+      'HubSpot Certified Inbound Sales & CRM',
+    ],
+    recommendedToLearn: [
+      { skill: 'HR Analytics & Darwinbox', reason: 'Modern enterprises require data-driven hiring and attrition predictive analytics.' },
+      { skill: 'Blended Learning & LMS Tools', reason: 'EdTech and corporate training sectors mandate digital curriculum management.' },
     ],
   },
 };

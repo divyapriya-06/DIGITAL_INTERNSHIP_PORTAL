@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { Loader } from '../../components/common/Loader';
 import { PlusCircle, Briefcase, MapPin, IndianRupee, Layers, Calendar, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { ALL_DOMAINS, ALL_ROLES } from '../../utils/portalConstants';
 
 export const PostInternshipPage = () => {
   const navigate = useNavigate();
@@ -136,28 +137,40 @@ export const PostInternshipPage = () => {
             <input
               type="text"
               required
-              placeholder="e.g. Full Stack Web Development Intern"
+              placeholder="e.g. Full Stack Web Development Intern, HR Recruiter, Sales Manager, Corporate Trainer..."
               value={role}
               onChange={(e) => setRole(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             />
+            {/* Quick role suggestions */}
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {['Full Stack Developer', 'HR Recruiter', 'Sales Manager', 'Teacher / Trainer', 'Data Analyst', 'Cloud / DevOps'].map((suggested) => (
+                <button
+                  type="button"
+                  key={suggested}
+                  onClick={() => setRole(suggested)}
+                  className="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-[10px] font-bold text-slate-600 transition-colors"
+                >
+                  + {suggested}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-              Technical Domain *
+              Internship Domain *
             </label>
             <select
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 bg-white"
             >
-              <option value="Full Stack Development">Full Stack Development</option>
-              <option value="AI & Machine Learning">AI & Machine Learning</option>
-              <option value="Cloud & DevOps">Cloud & DevOps</option>
-              <option value="Data Science & Analytics">Data Science & Analytics</option>
-              <option value="Mobile App Development">Mobile App Development</option>
-              <option value="Cybersecurity">Cybersecurity</option>
+              {ALL_DOMAINS.map((d) => (
+                <option key={d.name} value={d.name}>
+                  {d.name} ({d.dept})
+                </option>
+              ))}
             </select>
           </div>
         </div>

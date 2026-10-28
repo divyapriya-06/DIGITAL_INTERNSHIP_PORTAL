@@ -20,6 +20,7 @@ import { SkillDemandPage } from './pages/student/SkillDemandPage';
 import { StudentProfilePage } from './pages/student/StudentProfilePage';
 import { CompleteProfilePage } from './pages/student/CompleteProfilePage';
 import { StudentReviewsPage } from './pages/student/StudentReviewsPage';
+import { StudentNotificationsPage } from './pages/student/StudentNotificationsPage';
 
 // Industry Pages
 import { IndustryDashboard } from './pages/industry/IndustryDashboard';
@@ -174,7 +175,7 @@ export function App() {
                     path="/student/notifications"
                     element={
                       <ProtectedRoute allowedRoles={['student']}>
-                        <StudentApplications />
+                        <StudentNotificationsPage />
                       </ProtectedRoute>
                     }
                   />

@@ -43,7 +43,7 @@ export const AdminSkillDemandPage = () => {
         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 pt-1 pb-2">
           Select Discipline / Department:
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2">
           {Object.values(FIELD_TAXONOMY).map((f) => {
             const Icon = f.icon;
             const isSelected = selectedField === f.id;

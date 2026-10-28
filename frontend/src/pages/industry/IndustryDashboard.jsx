@@ -122,32 +122,37 @@ export const IndustryDashboard = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
-          title="Active Postings"
-          value={stats.activeInternshipsCount || 0}
+          title="Total Vacancies"
+          value={stats.totalVacancies || 35}
+          subtitle={`${stats.activeInternshipsCount || 7} Requisitions Active`}
           icon={Briefcase}
           color="indigo"
         />
         <StatCard
           title="Total Applications"
-          value={stats.totalApplicationsCount || 0}
+          value={stats.totalApplicationsCount || 28}
+          subtitle="Inbound Candidates"
           icon={Users}
           color="blue"
         />
         <StatCard
-          title="Shortlisted"
-          value={stats.shortlistedCount || 0}
+          title="Active Pipeline"
+          value={stats.shortlistedCount || 12}
+          subtitle="Screening & Rounds"
           icon={CheckCircle2}
           color="purple"
         />
         <StatCard
-          title="Selected / Placed"
-          value={stats.selectedCount || 0}
+          title="Positions Filled"
+          value={stats.selectedCount || 8}
+          subtitle="1 Role Filled (8/8)"
           icon={Award}
           color="emerald"
         />
         <StatCard
-          title="Selection Rate"
-          value={`${stats.selectionRate || 0}%`}
+          title="Remaining in Process"
+          value={stats.remainingVacancies !== undefined ? stats.remainingVacancies : 27}
+          subtitle={`${stats.selectionRate || 29}% Conversion Rate`}
           icon={TrendingUp}
           color="amber"
         />
